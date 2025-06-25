@@ -19,12 +19,6 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Lunqis.Telegram.Bot.Framework.Bot;
 /// <summary>
 /// 表示一个 Telegram 模块构建器接口，用于定义模块的添加和构建逻辑。
