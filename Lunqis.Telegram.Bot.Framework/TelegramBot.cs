@@ -22,8 +22,61 @@
 using Lunqis.Telegram.Bot.Framework.Bot;
 
 namespace Lunqis.Telegram.Bot.Framework;
-internal partial class TelegramBot : ITelegramBot
+
+/// <summary>
+/// Represents a Telegram bot that can be configured, managed, and started using a modular approach.
+/// </summary>
+/// <remarks>The <see cref="TelegramBot"/> class provides functionality for building and managing a Telegram bot
+/// through the <see cref="ITelegramModuleBuilder"/> interface. It supports adding modules to extend functionality and
+/// offers methods to start and stop the bot asynchronously.</remarks>
+public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TelegramBot"/> class.
+    /// </summary>
+    /// <remarks>This constructor sets up the Telegram bot by invoking the initialization method.  It is
+    /// intended for internal use and should not be called directly by external code.</remarks>
+    private TelegramBot()
+    {
+        this.InitTelegramBot();
+    }
+
+    /// <summary>
+    /// Creates and returns a new instance of a builder for configuring and managing a Telegram bot module.
+    /// </summary>
+    /// <returns>An object implementing <see cref="ITelegramModuleBuilder"/> that can be used to configure and manage a Telegram
+    /// bot module.</returns>
+    public static ITelegramModuleBuilder Create()
+    {
+        return new TelegramBot();
+    }
+
+    #region ITelegramModuleBuilder 接口部分
+
+    private List<ITelegramModule> _modules = [];
+
+    public ITelegramModuleBuilder AddModule(ITelegramModule module)
+    {
+        ArgumentNullException.ThrowIfNull(module, nameof(module));
+        _modules.Add(module);
+        return this;
+    }
+
+    public ITelegramModuleBuilder AddModule<T>(params object[] objects) where T : ITelegramModule
+    {
+        throw new NotImplementedException();
+    }
+
+    public ITelegramBot Build()
+    {
+        foreach (var module in _modules)
+        {
+            module.Build(new ServiceCollection(), null);
+        }
+    }
+    #endregion
+
+    #region ITelegramBot 接口部分
     public void Dispose()
     {
         throw new NotImplementedException();
@@ -38,4 +91,5 @@ internal partial class TelegramBot : ITelegramBot
     {
         throw new NotImplementedException();
     }
+    #endregion
 }

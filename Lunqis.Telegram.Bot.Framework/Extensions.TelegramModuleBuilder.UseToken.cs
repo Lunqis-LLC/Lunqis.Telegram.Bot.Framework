@@ -25,16 +25,19 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Lunqis.Telegram.Bot.Framework;
 public static partial class Extensions
 {
-    private class InitTelegramBotModule : ITelegramModule, ITelegramBotBuildService
+    private class UseTokenModule(string token) : ITelegramModule, ITelegramPreBuildModule
     {
-        public void AddBuildService(IServiceCollection services)
-        {
-            services.AddSingleton<InternalSettings>();
-        }
+        private readonly string _token = token;
 
         public void Build(IServiceCollection services, IServiceProvider builderService)
         {
-            
+
+        }
+
+        public void PreBuild(IServiceCollection services, IServiceProvider builderService)
+        {
+            InternalSettings internalSettings = builderService.GetRequiredService<InternalSettings>();
+            internalSettings.Token = _token;
         }
     }
 }
