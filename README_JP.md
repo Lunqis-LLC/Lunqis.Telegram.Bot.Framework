@@ -1,6 +1,6 @@
 # Lunqis.Telegram.Bot.Framework
 
-### 強力な Telegram Bot フレームワーク
+## 強力な Telegram Bot フレームワーク
 
 | [中文](README_CN.md) | [English](README.md) | [日本語](README_JP.md) |
 
@@ -32,3 +32,15 @@ public Task<IActionResult> SayHello(string str)
 このように、簡単な「Hello」と返すボットが作成できます。
 
 あとは、Telegramのボットチャットウィンドウでコマンド `/hello` を入力するだけで、ボットが応答します。
+
+## 上級設定
+
+## フレームワーク開発
+
+## サポートサービス
+
+このオープンソース製品はLunqis社によって開発されています。MITライセンスのもとで自由にご利用いただけます。もしこのフレームワークで提供されていないカスタマイズ機能を持つTelegram Botを作成したい場合や、有料サポートサービスをご希望の場合は、お気軽にご連絡ください。満足いただけるサービスを提供いたします。
+
+公式サイト：https://lunqis.com
+
+お問い合わせ：info@lunqis.com

@@ -1,6 +1,6 @@
 # Lunqis.Telegram.Bot.Framework
 
-### A powerful Telegram Bot framework
+## A powerful Telegram Bot framework
 
 | [中文](README_CN.md) | [English](README.md) | [日本語](README_JP.md) |
 
@@ -32,3 +32,15 @@ public Task<IActionResult> SayHello(string str)
 In this way, a simple bot that says Hello is created.
 
 Now, just enter the command `/hello` in the Telegram bot chat window, and the bot will respond.
+
+## Advanced Configuration
+
+## Framework Development
+
+## Support Services
+
+This open-source product is developed by Lunqis. You are free to use it under the terms of the MIT LICENSE. If you want to customize your own Telegram Bot with features not provided by this framework, or if you are seeking paid support services, please contact us and we will provide you with satisfactory service.
+
+Our website: https://lunqis.com
+
+Contact us: info@lunqis.com
