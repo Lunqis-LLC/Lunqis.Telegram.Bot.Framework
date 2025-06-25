@@ -19,23 +19,7 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using Lunqis.Telegram.Bot.Framework.Bot;
-
 namespace Lunqis.Telegram.Bot.Framework;
-internal partial class TelegramBot : ITelegramBot
+public static partial class Extensions
 {
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task StartAsync(bool wait = false)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task StopAsync()
-    {
-        throw new NotImplementedException();
-    }
 }

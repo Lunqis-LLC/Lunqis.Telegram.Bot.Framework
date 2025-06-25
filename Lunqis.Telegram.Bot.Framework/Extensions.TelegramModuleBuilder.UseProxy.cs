@@ -20,22 +20,34 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 using Lunqis.Telegram.Bot.Framework.Bot;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lunqis.Telegram.Bot.Framework;
-internal partial class TelegramBot : ITelegramBot
+public static partial class Extensions
 {
-    public void Dispose()
+    private class UseProxyModule : ITelegramModule, ITelegramBotBuildService
     {
-        throw new NotImplementedException();
-    }
+        private readonly string _uri;
+        private readonly int? _port;
+        private readonly string? _username;
+        private readonly string? _password;
+        public UseProxyModule(string uri, int? port = null, string? username = null, string? password = null)
+        {
+            _uri = uri;
+            _port = port;
+            _username = username;
+            _password = password;
+        }
 
-    public Task StartAsync(bool wait = false)
-    {
-        throw new NotImplementedException();
-    }
 
-    public Task StopAsync()
-    {
-        throw new NotImplementedException();
+        public void AddBuildService(IServiceCollection services)
+        {
+
+        }
+
+        public void Build(IServiceCollection services, IServiceProvider builderService)
+        {
+
+        }
     }
 }
