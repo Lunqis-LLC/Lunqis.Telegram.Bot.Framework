@@ -19,7 +19,6 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using System.Text;
 using Telegram.Bot.Types.Enums;
 
 namespace Lunqis.Telegram.Bot.Framework.Messages;
@@ -30,7 +29,10 @@ namespace Lunqis.Telegram.Bot.Framework.Messages;
 /// <remarks>The <see cref="TelegramMessage"/> class provides an abstract foundation for creating and formatting
 /// messages in various styles and formats supported by Telegram, such as HTML, Markdown, and MarkdownV2. It includes
 /// methods for applying text formatting (e.g., bold, italic, underline) and creating links, hashtags, and code blocks.
-/// Subclasses implement specific formatting rules for each supported format.</remarks>
+/// Subclasses implement specific formatting rules for each supported format.
+/// <br></br><br></br>
+/// <see href="https://core.telegram.org/bots/api#sendmessage"/>
+/// </remarks>
 public abstract class TelegramMessage
 {
     /// <summary>
@@ -47,7 +49,7 @@ public abstract class TelegramMessage
         /// manipulating,  and rendering HTML elements. It can be used to create or modify HTML structures
         /// programmatically.</remarks>
         Html,
-        
+
         /// <summary>
         /// Represents the MarkdownV2 formatting style used in text processing.
         /// </summary>
@@ -55,7 +57,7 @@ public abstract class TelegramMessage
         /// formatting features,  such as bold, italic, inline code, and hyperlinks. This class or member is typically
         /// used to handle  text content that requires MarkdownV2-compatible formatting.</remarks>
         MarkdownV2,
-        
+
         /// <summary>
         /// Represents a Uniform Resource Locator (URL) used to identify and access resources on the web.
         /// </summary>
@@ -63,7 +65,7 @@ public abstract class TelegramMessage
         /// typically includes components such as the protocol (e.g., "http" or "https"), domain name, path, and query
         /// parameters. This class or member may be used to store, manipulate, or validate URLs.</remarks>
         URL,
-        
+
         /// <summary>
         /// Represents raw data or content that has not been processed or transformed.
         /// </summary>
@@ -135,7 +137,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> containing the formatted blockquote element.</returns>
         public override TelegramMessage Blockquote(string text, bool expandable) =>
             AppendRaw($"<blockquote{IIF(expandable, $" {nameof(expandable)}", string.Empty)}>{EscapeString(text, EscapeMode.Html)}</blockquote>");
-        
+
         /// <summary>
         /// Formats the specified text as bold using HTML tags.
         /// </summary>
@@ -180,7 +182,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> containing the formatted hyperlink.</returns>
         public override TelegramMessage Link(string text, string url) =>
             AppendRaw($"<a href=\"{EscapeString(text, EscapeMode.URL)}\">{EscapeString(text, EscapeMode.Html)}</a>");
-        
+
         /// <summary>
         /// Creates a hyperlink to a Telegram user based on their user ID.
         /// </summary>
@@ -191,7 +193,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> containing the formatted hyperlink to the specified user.</returns>
         public override TelegramMessage LinkUser(string text, long userid) =>
             AppendRaw($"<a href=\"tg://user?id={userid}\">{EscapeString(text, EscapeMode.Html)}</a>");
-        
+
         /// <summary>
         /// Wraps the specified text in HTML <pre> tags, escaping it for safe HTML rendering.
         /// </summary>
@@ -199,7 +201,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> containing the escaped text wrapped in <pre> tags.</returns>
         public override TelegramMessage Pre(string text) =>
             AppendRaw($"<pre>{EscapeString(text, EscapeMode.Html)}</pre>");
-        
+
         /// <summary>
         /// Formats the specified text as a preformatted code block with syntax highlighting.
         /// </summary>
@@ -211,7 +213,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> containing the formatted preformatted code block.</returns>
         public override TelegramMessage PreCode(string text, string language) =>
             AppendRaw($"<pre><code class=\"language-{language}\">{EscapeString(text, EscapeMode.Html)}</code></pre>");
-        
+
         /// <summary>
         /// Formats the specified text as a spoiler in Telegram's message format.
         /// </summary>
@@ -221,7 +223,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted spoiler text.</returns>
         public override TelegramMessage Spoiler(string text) =>
             AppendRaw($"<tg-spoiler>{EscapeString(text, EscapeMode.Html)}</tg-spoiler>");
-        
+
         /// <summary>
         /// Applies strikethrough formatting to the specified text.
         /// </summary>
@@ -231,7 +233,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text.</returns>
         public override TelegramMessage Strikethrough(string text) =>
             AppendRaw($"<s>{EscapeString(text, EscapeMode.Html)}</s>");
-        
+
         /// <summary>
         /// Appends the specified text to the message, escaping it for HTML formatting.
         /// </summary>
@@ -239,7 +241,7 @@ public abstract class TelegramMessage
         /// <returns>A <see cref="TelegramMessage"/> instance with the appended and escaped text.</returns>
         public override TelegramMessage Text(string text) =>
             AppendRaw(EscapeString(text, EscapeMode.Html));
-        
+
         /// <summary>
         /// Formats the specified text with an underline HTML tag.
         /// </summary>
@@ -251,76 +253,301 @@ public abstract class TelegramMessage
     }
 
     /// <summary>
-    /// MD2代消息创建器
+    /// Provides functionality for building Telegram messages using MarkdownV2 formatting.
     /// </summary>
+    /// <remarks>This class extends <see cref="TelegramMessage"/> and sets the <see cref="ParseMode"/> to 
+    /// <see cref="ParseMode.MarkdownV2"/>. It includes methods for constructing various MarkdownV2  elements such as
+    /// bold text, italic text, links, and more.</remarks>
     private class MarkdownV2MessageBuilder : TelegramMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MarkdownV2MessageBuilder"/> class.
+        /// </summary>
+        /// <remarks>This constructor sets the default parse mode to <see cref="ParseMode.MarkdownV2"/>, 
+        /// ensuring that messages built with this instance use MarkdownV2 formatting.</remarks>
         public MarkdownV2MessageBuilder() : base() =>
             ParseMode = ParseMode.MarkdownV2;
 
+        /// <summary>
+        /// Formats the specified text as a blockquote in MarkdownV2 format.
+        /// </summary>
+        /// <remarks>The method escapes the input text to ensure it adheres to MarkdownV2 formatting
+        /// rules.</remarks>
+        /// <param name="text">The text to format as a blockquote. Cannot be null or empty.</param>
+        /// <param name="expandable">A value indicating whether the blockquote should be expandable.  If <see langword="true"/>, the blockquote
+        /// may include additional expandable content.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted blockquote.</returns>
         public override TelegramMessage Blockquote(string text, bool expandable) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"> {EscapeString(text, EscapeMode.MarkdownV2)}");
+
+        /// <summary>
+        /// Formats the specified text as bold using MarkdownV2 syntax.
+        /// </summary>
+        /// <param name="text">The text to format as bold. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text.</returns>
         public override TelegramMessage Bold(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"*{EscapeString(text, EscapeMode.MarkdownV2)}*");
+
+        /// <summary>
+        /// Formats the specified text as inline code using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>This method escapes the input text to ensure it is properly formatted for MarkdownV2.
+        /// Inline code is enclosed in backticks (`) as per MarkdownV2 specifications.</remarks>
+        /// <param name="text">The text to format as inline code. Cannot be null.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text.</returns>
         public override TelegramMessage Code(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"`{EscapeString(text, EscapeMode.MarkdownV2)}`");
+
+        /// <summary>
+        /// Formats the specified text as a Markdown V2 hashtag.
+        /// </summary>
+        /// <remarks>The method escapes the input text to ensure it is safely formatted as a Markdown V2
+        /// hashtag. The resulting string can be used in Telegram messages to create clickable hashtags.</remarks>
+        /// <param name="text">The text to format as a hashtag. Cannot be null or empty.</param>
+        /// <returns>A string containing the formatted hashtag in Markdown V2 syntax.</returns>
         public override TelegramMessage HashTag(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"[{EscapeString(text, EscapeMode.MarkdownV2)}](#{EscapeString(text, EscapeMode.MarkdownV2)})");
+
+        /// <summary>
+        /// Formats the specified text with italic styling using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>This method applies MarkdownV2 syntax to the input text, escaping any special
+        /// characters as needed. The resulting text is wrapped with underscores (_) to indicate italic
+        /// styling.</remarks>
+        /// <param name="text">The text to be formatted as italic. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text.</returns>
         public override TelegramMessage Italic(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"_{EscapeString(text, EscapeMode.MarkdownV2)}_");
+
+        /// <summary>
+        /// Creates a hyperlink in Telegram MarkdownV2 format.
+        /// </summary>
+        /// <remarks>The method formats the provided text and URL into Telegram MarkdownV2 syntax. Ensure
+        /// that the <paramref name="text"/> and <paramref name="url"/> parameters are properly escaped to avoid issues
+        /// with special characters.</remarks>
+        /// <param name="text">The display text for the hyperlink. Cannot be null or empty.</param>
+        /// <param name="url">The URL to link to. Must be a valid URL and cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> containing the formatted hyperlink.</returns>
         public override TelegramMessage Link(string text, string url) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"[{EscapeString(text, EscapeMode.MarkdownV2)}]({EscapeString(url, EscapeMode.URL)})");
+
+        /// <summary>
+        /// Creates a Telegram message that links to a specific user.
+        /// </summary>
+        /// <remarks>This method generates a Telegram message with a clickable link to a user profile. The
+        /// <paramref name="text"/> parameter is escaped to ensure proper formatting.</remarks>
+        /// <param name="text">The display text for the link. This text will be shown as the clickable part of the message.</param>
+        /// <param name="userid">The unique identifier of the Telegram user to link to. Must be a valid Telegram user ID.</param>
+        /// <returns>A <see cref="TelegramMessage"/> containing the formatted link to the specified user. The link will use the
+        /// format <c>tg://user?id={userid}</c>.</returns>
         public override TelegramMessage LinkUser(string text, long userid) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"[{EscapeString(text)}](tg://user?id={userid})");
+
+        /// <summary>
+        /// Formats the specified text as a preformatted block using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>This method escapes the input text to ensure compatibility with MarkdownV2 syntax.
+        /// The resulting message will include the text wrapped in triple backticks.</remarks>
+        /// <param name="text">The text to format as a preformatted block. Cannot be null.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text. The text is wrapped in MarkdownV2
+        /// preformatted block syntax.</returns>
         public override TelegramMessage Pre(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"```").NewLine().AppendRaw(EscapeString(text, EscapeMode.MarkdownV2)).NewLine().AppendRaw("```");
+
+        /// <summary>
+        /// Formats the specified text as a preformatted code block in Telegram MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>This method generates a MarkdownV2-compatible code block by appending the language
+        /// identifier and escaping the provided text. The resulting message is suitable for sending to
+        /// Telegram.</remarks>
+        /// <param name="text">The text to include within the code block. Special characters will be escaped to ensure proper formatting.</param>
+        /// <param name="language">The programming language identifier to include in the code block header. This can be used for syntax
+        /// highlighting.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted code block.</returns>
         public override TelegramMessage PreCode(string text, string language) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"```{language}").NewLine().AppendRaw(EscapeString(text, EscapeMode.MarkdownV2)).NewLine().AppendRaw("```");
+
+        /// <summary>
+        /// Formats the specified text as a spoiler using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>Spoiler formatting in MarkdownV2 syntax wraps the text with double vertical bars
+        /// ("||"). Use this method to mark sensitive or hidden content that users can reveal by interacting with
+        /// it.</remarks>
+        /// <param name="text">The text to be formatted as a spoiler. Cannot be null.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted spoiler text.</returns>
         public override TelegramMessage Spoiler(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"||{EscapeString(text, EscapeMode.MarkdownV2)}||");
+
+        /// <summary>
+        /// Applies strikethrough formatting to the specified text using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>This method formats the input text by surrounding it with tilde characters (~) to
+        /// indicate strikethrough in MarkdownV2. Ensure the input text is properly escaped to avoid syntax errors in
+        /// Markdown.</remarks>
+        /// <param name="text">The text to format with strikethrough. Cannot be null or empty.</param>
+        /// <returns>A new <see cref="TelegramMessage"/> instance with the strikethrough formatting applied.</returns>
         public override TelegramMessage Strikethrough(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"~{EscapeString(text, EscapeMode.MarkdownV2)}~");
+
+        /// <summary>
+        /// Appends the specified text to the current message.
+        /// </summary>
+        /// <param name="text">The text to append. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance with the appended text.</returns>
         public override TelegramMessage Text(string text) =>
-            throw new NotImplementedException();
+            AppendRaw(text);
+
+        /// <summary>
+        /// Formats the specified text with Markdown V2 underline syntax.
+        /// </summary>
+        /// <param name="text">The text to be underlined. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the underlined text formatted in Markdown V2.</returns>
         public override TelegramMessage Underline(string text) =>
-            throw new System.NotImplementedException();
+            AppendRaw($"__{EscapeString(text, EscapeMode.MarkdownV2)}__");
     }
 
     /// <summary>
-    /// Provides functionality for building Telegram messages using Markdown formatting.
+    /// Provides functionality for building Telegram messages formatted using Markdown.
     /// </summary>
-    /// <remarks>This class extends <see cref="TelegramMessage"/> and enables the creation of messages with
-    /// Markdown-specific formatting options. It supports various Markdown elements such as bold, italic, code blocks,
-    /// links, and more. Use the methods provided to construct messages with the desired formatting.</remarks>
+    /// <remarks>This class extends <see cref="TelegramMessage"/> and overrides methods to generate
+    /// Markdown-formatted text elements, such as bold, italic, links, and code blocks. It is designed to simplify the
+    /// creation of Telegram messages with Markdown styling.</remarks>
     private class MarkdownMessageBuilder : TelegramMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MarkdownMessageBuilder"/> class.
+        /// </summary>
+        /// <remarks>This constructor sets the <see cref="ParseMode"/> property to <see
+        /// cref="ParseMode.Markdown"/>,  ensuring that messages created with this builder use Markdown
+        /// formatting.</remarks>
         public MarkdownMessageBuilder() : base() =>
             ParseMode = ParseMode.Markdown;
 
+        /// <summary>
+        /// Creates a blockquote element in a Telegram message.
+        /// </summary>
+        /// <remarks>This method generates a blockquote element with the specified text content.  If
+        /// <paramref name="expandable"/> is <see langword="true"/>, the blockquote may include additional functionality
+        /// to expand and display more content, depending on the Telegram platform's capabilities.</remarks>
+        /// <param name="text">The text content to be displayed within the blockquote.</param>
+        /// <param name="expandable">A value indicating whether the blockquote should be expandable.  <see langword="true"/> if the blockquote
+        /// can be expanded to show additional content; otherwise, <see langword="false"/>.</param>
+        /// <returns>A <see cref="TelegramMessage"/> representing the blockquote element.</returns>
         public override TelegramMessage Blockquote(string text, bool expandable) =>
-            AppendRaw(string.Empty);
+            PreCode(text, string.Empty);
+
+        /// <summary>
+        /// Formats the specified text as bold in a Telegram message.
+        /// </summary>
+        /// <param name="text">The text to format as bold. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text.</returns>
         public override TelegramMessage Bold(string text) =>
             AppendRaw($"*{text}*");
+
+        /// <summary>
+        /// Formats the specified text as inline code in a Telegram message.
+        /// </summary>
+        /// <param name="text">The text to format as inline code. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted inline code.</returns>
         public override TelegramMessage Code(string text) =>
             AppendRaw($"`{text}`");
+
+        /// <summary>
+        /// Formats a hashtag for use in a Telegram message.
+        /// </summary>
+        /// <remarks>The method formats the provided text as a clickable hashtag link using Telegram's
+        /// MarkdownV2 syntax. Ensure the text does not contain invalid characters for MarkdownV2.</remarks>
+        /// <param name="text">The text of the hashtag. Must not be null or empty.</param>
+        /// <returns>A formatted string representing the hashtag, suitable for inclusion in a Telegram message.</returns>
         public override TelegramMessage HashTag(string text) =>
-            AppendRaw(string.Empty);
+            AppendRaw($"[#{text}](#{EscapeString(text, EscapeMode.MarkdownV2)})");
+
+        /// <summary>
+        /// Formats the specified text as italicized in a Telegram message.
+        /// </summary>
+        /// <param name="text">The text to be formatted as italicized. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the italicized text.</returns>
         public override TelegramMessage Italic(string text) =>
             AppendRaw($"_{text}_");
+
+        /// <summary>
+        /// Creates a hyperlink in the Telegram message format.
+        /// </summary>
+        /// <remarks>The method formats the hyperlink using Telegram's Markdown syntax. Ensure that the
+        /// <paramref name="url"/> is properly encoded if it contains special characters.</remarks>
+        /// <param name="text">The display text for the hyperlink.</param>
+        /// <param name="url">The URL to which the hyperlink points. Must be a valid URL.</param>
+        /// <returns>A <see cref="TelegramMessage"/> containing the formatted hyperlink.</returns>
         public override TelegramMessage Link(string text, string url) =>
             AppendRaw($"[{text}]({url})");
+
+        /// <summary>
+        /// Creates a Telegram message that links to a specific user.
+        /// </summary>
+        /// <remarks>This method generates a Telegram-specific link that can be used to mention or
+        /// reference a user. Ensure that <paramref name="text"/> is meaningful and <paramref name="userid"/>
+        /// corresponds to a valid Telegram user.</remarks>
+        /// <param name="text">The display text for the link. This text will be shown as the clickable link.</param>
+        /// <param name="userid">The unique identifier of the Telegram user to link to. Must be a valid Telegram user ID.</param>
+        /// <returns>A <see cref="TelegramMessage"/> containing the formatted link to the specified user. The link will use the
+        /// format <c>[text](tg://user?id=userid)</c>.</returns>
         public override TelegramMessage LinkUser(string text, long userid) =>
             AppendRaw($"[{text}](tg://user?id={userid})");
+
+        /// <summary>
+        /// Formats the specified text as a preformatted block in a Telegram message.
+        /// </summary>
+        /// <remarks>The method wraps the provided text in triple backticks to create a preformatted
+        /// block. Special characters in the text are escaped to ensure proper rendering.</remarks>
+        /// <param name="text">The text to format as a preformatted block. Cannot be null.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted preformatted block.</returns>
         public override TelegramMessage Pre(string text) =>
-            AppendRaw($"```").NewLine().AppendRaw(text).NewLine().AppendRaw("```");
+            AppendRaw($"```").NewLine().AppendRaw(EscapeString(text)).NewLine().AppendRaw("```");
+
+        /// <summary>
+        /// Formats the specified text as a code block in a Telegram message, using the specified programming language.
+        /// </summary>
+        /// <remarks>The method wraps the provided text in a Markdown-style code block, using triple
+        /// backticks (` ``` `)  and the specified language for syntax highlighting.</remarks>
+        /// <param name="text">The text to be included in the code block.</param>
+        /// <param name="language">The programming language to be specified for syntax highlighting. This value is converted to lowercase.</param>
+        /// <returns>A <see cref="TelegramMessage"/> object containing the formatted code block.</returns>
         public override TelegramMessage PreCode(string text, string language) =>
             AppendRaw($"```{language.ToString().ToLower()}").NewLine().AppendRaw(text).NewLine().AppendRaw("```");
+
+        /// <summary>
+        /// Formats the specified text as a spoiler using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>Spoiler formatting wraps the text in double vertical bars ("||") to indicate hidden
+        /// content. Ensure the input text does not contain unsupported characters for MarkdownV2.</remarks>
+        /// <param name="text">The text to be formatted as a spoiler. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted spoiler text.</returns>
         public override TelegramMessage Spoiler(string text) =>
             AppendRaw($"||{EscapeString(text, EscapeMode.MarkdownV2)}||");
+
+        /// <summary>
+        /// Applies strikethrough formatting to the specified text using MarkdownV2 syntax.
+        /// </summary>
+        /// <remarks>Strikethrough formatting is applied by surrounding the text with tilde characters (~)
+        /// in MarkdownV2. Ensure the input text does not contain invalid MarkdownV2 characters.</remarks>
+        /// <param name="text">The text to format with strikethrough. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the formatted text.</returns>
         public override TelegramMessage Strikethrough(string text) =>
             AppendRaw($"~{EscapeString(text, EscapeMode.MarkdownV2)}~");
+
+        /// <summary>
+        /// Appends the specified text to the message, escaping any special characters.
+        /// </summary>
+        /// <param name="text">The text to append to the message. Cannot be null.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance with the appended text.</returns>
         public override TelegramMessage Text(string text) =>
             AppendRaw(EscapeString(text));
+
+        /// <summary>
+        /// Formats the specified text with Markdown V2 underline syntax.
+        /// </summary>
+        /// <param name="text">The text to be underlined. Cannot be null or empty.</param>
+        /// <returns>A <see cref="TelegramMessage"/> instance containing the underlined text formatted in Markdown V2.</returns>
         public override TelegramMessage Underline(string text) =>
             AppendRaw($"__{EscapeString(text, EscapeMode.MarkdownV2)}__");
     }
