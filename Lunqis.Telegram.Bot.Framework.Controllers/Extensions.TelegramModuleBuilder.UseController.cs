@@ -19,9 +19,27 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+using Lunqis.Telegram.Bot.Framework.Bot;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Lunqis.Telegram.Bot.Framework.Controllers;
-
-public class Class1
+public static partial class Extensions
 {
+    /// <summary>
+    /// Provides functionality to configure services for the controller module in a Telegram application.
+    /// </summary>
+    /// <remarks>This module integrates controller-related services into the application's dependency
+    /// injection system. Use the <see cref="Build"/> method to register required services and dependencies.</remarks>
+    private class UseControllerModule : ITelegramModule
+    {
+        /// <summary>
+        /// Configures the service collection to use the controller module.
+        /// </summary>
+        /// <param name="services">The service collection to configure.</param>
+        /// <param name="builderService">The service provider used during the configuration process.</param>
+        public void Build(IServiceCollection services, IServiceProvider builderService)
+        {
 
+        }
+    }
 }

@@ -69,6 +69,20 @@ public static partial class Extensions
     }
 
     /// <summary>
+    /// Adds a dictionary-based session management module to the Telegram module builder.
+    /// </summary>
+    /// <remarks>This method enables session management using an in-memory dictionary. It is suitable for
+    /// scenarios where session data does not need to persist beyond the application's lifetime or where a lightweight
+    /// session management solution is sufficient.</remarks>
+    /// <param name="telegramModuleBuilder">The <see cref="ITelegramModuleBuilder"/> instance to which the dictionary session module will be added.</param>
+    /// <returns>The same <see cref="ITelegramModuleBuilder"/> instance, allowing for method chaining.</returns>
+    public static ITelegramModuleBuilder UseDictionarySession(this ITelegramModuleBuilder telegramModuleBuilder)
+    {
+        /// Adds the dictionary session module to the Telegram module builder.
+        return telegramModuleBuilder.AddModule(new UseDictionarySessionModule());
+    }
+
+    /// <summary>
     /// Adds a token module to the Telegram module builder.
     /// </summary>
     /// <param name="telegramModuleBuilder">The <see cref="ITelegramModuleBuilder"/> instance to which the token module will be added.</param>

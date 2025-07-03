@@ -8,4 +8,8 @@
 	<Version>1.0.2506.0</Version>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Lunqis.Telegram.Bot.Framework\Lunqis.Telegram.Bot.Framework.csproj" />
+  </ItemGroup>
+
 </Project>
