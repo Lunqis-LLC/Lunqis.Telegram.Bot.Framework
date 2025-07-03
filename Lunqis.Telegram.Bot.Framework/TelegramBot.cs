@@ -22,6 +22,7 @@
 using Lunqis.Telegram.Bot.Framework.Bot;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
 
 namespace Lunqis.Telegram.Bot.Framework;
 
@@ -76,8 +77,19 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
 
     #region ITelegramModuleBuilder 接口部分
 
+    /// <summary>
+    /// Represents a builder for configuring and managing a collection of Telegram modules.
+    /// </summary>
+    /// <remarks>This interface provides methods for adding, configuring, and retrieving Telegram modules.
+    /// Implementations of this interface are responsible for managing the lifecycle and dependencies of the
+    /// modules.</remarks>
     private List<ITelegramModule> _modules = [];
 
+    /// <summary>
+    /// Adds a module to the current builder for configuration and processing.
+    /// </summary>
+    /// <param name="module">The module to add. Cannot be <see langword="null"/>.</param>
+    /// <returns>The current instance of <see cref="ITelegramModuleBuilder"/> to allow method chaining.</returns>
     public ITelegramModuleBuilder AddModule(ITelegramModule module)
     {
         ArgumentNullException.ThrowIfNull(module, nameof(module));
@@ -85,11 +97,29 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
         return this;
     }
 
+    /// <summary>
+    /// Adds a module of the specified type to the current module builder.
+    /// </summary>
+    /// <typeparam name="T">The type of the module to add. Must implement <see cref="ITelegramModule"/>.</typeparam>
+    /// <param name="objects">An array of parameters to pass to the constructor of the module.</param>
+    /// <returns>An <see cref="ITelegramModuleBuilder"/> instance for chaining additional module configurations.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if an instance of the specified module type <typeparamref name="T"/> cannot be created  using the
+    /// provided parameters.</exception>
     public ITelegramModuleBuilder AddModule<T>(params object[] objects) where T : ITelegramModule
     {
-        throw new NotImplementedException();
+        return Activator.CreateInstance(typeof(T), objects) is ITelegramModule module
+            ? AddModule(module)
+            : throw new InvalidOperationException($"Cannot create an instance of {typeof(T).FullName} with the provided parameters.");
     }
 
+    /// <summary>
+    /// Builds and returns an instance of <see cref="ITelegramBot"/> configured with the registered modules and
+    /// services.
+    /// </summary>
+    /// <remarks>This method initializes the necessary services and modules, invoking their build logic to
+    /// configure the bot. Modules implementing <see cref="ITelegramBotBuildService"/> can add additional build services
+    /// to the configuration.</remarks>
+    /// <returns>An instance of <see cref="ITelegramBot"/> with all registered modules and services applied.</returns>
     public ITelegramBot Build()
     {
         ServiceCollection services = new();
@@ -105,6 +135,13 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
     #endregion
 
     #region ITelegramBot 接口部分
+
+    /// <summary>
+    /// Releases the resources used by the current instance of the class.
+    /// </summary>
+    /// <remarks>This method stops any ongoing asynchronous operations, disposes of the service provider if
+    /// applicable,  and suppresses finalization to optimize garbage collection. It should be called when the instance
+    /// is no  longer needed to ensure proper cleanup of resources.</remarks>
     public void Dispose()
     {
         StopAsync().Wait(CancellationTokenSource.Token);
@@ -113,13 +150,37 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
         GC.SuppressFinalize(this);
     }
 
-    public Task StartAsync(bool wait = false)
+    /// <summary>
+    /// Starts the Telegram bot client to begin receiving updates asynchronously.
+    /// </summary>
+    /// <remarks>This method initializes the bot client and begins receiving updates using the specified
+    /// update handler. If <paramref name="wait"/> is set to <see langword="true"/>, the method will block execution
+    /// until the cancellation token is triggered.</remarks>
+    /// <param name="wait">A boolean value indicating whether to block execution until cancellation is requested.  If <see
+    /// langword="true"/>, the method will continuously wait; otherwise, it returns immediately after starting the bot
+    /// client.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task StartAsync(bool wait = false)
     {
         ITelegramBotClient telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
-        telegramBotClient.StartReceiving();
+        telegramBotClient.StartReceiving<TelegramUpdateHandler>(new ReceiverOptions
+        {
+            AllowedUpdates = [],
+        }, CancellationTokenSource.Token);
+
+        if (wait)
+            while (!CancellationTokenSource.IsCancellationRequested)
+                await Task.Delay(1000, CancellationTokenSource.Token);
     }
 
+    /// <summary>
+    /// Stops the Telegram bot client asynchronously, closing any active connections.
+    /// </summary>
+    /// <remarks>This method retrieves the required <see cref="ITelegramBotClient"/> instance from the service
+    /// provider  and initiates the closing process using the provided cancellation token. Ensure that the service
+    /// provider  is properly configured and the bot client is initialized before calling this method.</remarks>
+    /// <returns>A task that represents the asynchronous operation of stopping the bot client.</returns>
     public async Task StopAsync()
     {
         ITelegramBotClient telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();

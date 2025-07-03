@@ -59,32 +59,39 @@ public sealed class TelegramContext : IDisposable
     public ISession Session { get; }
 
     /// <summary>
-    /// 
+    /// Gets the current <see cref="IServiceScope"/> associated with the service.
     /// </summary>
     public IServiceScope ServiceScope { get; }
 
     /// <summary>
-    /// 
+    /// Gets the service provider associated with the current scope.
     /// </summary>
     public IServiceProvider ScopeServiceProvider => ServiceScope.ServiceProvider;
 
     /// <summary>
-    /// 
+    /// Gets or sets the <see cref="CancellationToken"/> used to signal cancellation for the associated operation.
     /// </summary>
     public CancellationToken CancellationToken { get; set; } = default!;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="TelegramContext"/> class using the specified service provider and
+    /// Telegram request.
     /// </summary>
-    /// <param name="serviceProvider"></param>
-    /// <param name="telegramRequest"></param>
+    /// <remarks>This constructor creates a scoped service provider to manage the lifetime of dependencies
+    /// during the operation.</remarks>
+    /// <param name="serviceProvider">The service provider used to resolve dependencies for the context.</param>
+    /// <param name="telegramRequest">The Telegram request containing the data and metadata for the current operation.</param>
     internal TelegramContext(IServiceProvider serviceProvider, TelegramRequest telegramRequest) : this(serviceProvider.CreateScope(), telegramRequest) { }
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="TelegramContext"/> class, providing access to the current service
+    /// scope, session, and Telegram request.
     /// </summary>
-    /// <param name="serviceScope"></param>
-    /// <param name="telegramRequest"></param>
+    /// <remarks>This constructor initializes the session by resolving the <see cref="ISession"/> service from
+    /// the provided service scope. Ensure that the <paramref name="serviceScope"/> contains all required services for
+    /// proper operation.</remarks>
+    /// <param name="serviceScope">The service scope used to resolve dependencies within the current context. Cannot be null.</param>
+    /// <param name="telegramRequest">The incoming Telegram request associated with this context. Cannot be null.</param>
     internal TelegramContext(IServiceScope serviceScope, TelegramRequest telegramRequest)
     {
         ServiceScope = serviceScope;
@@ -94,8 +101,10 @@ public sealed class TelegramContext : IDisposable
     }
 
     /// <summary>
-    /// 
+    /// Releases all resources used by the current instance of the class.
     /// </summary>
+    /// <remarks>This method disposes the underlying service scope, freeing any resources it holds.  After
+    /// calling this method, the instance should not be used further.</remarks>
     public void Dispose() =>
         ServiceScope.Dispose();
 }

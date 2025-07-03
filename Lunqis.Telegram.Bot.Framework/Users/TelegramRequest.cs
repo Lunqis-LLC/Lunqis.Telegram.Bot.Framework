@@ -53,11 +53,7 @@ public sealed class TelegramRequest : Update
     {
         get
         {
-            if (ReadOnlyMessageEntities.Count == 0)
-                return string.Empty;
-
-            var messageInfo = ReadOnlyMessageEntities[0];
-            return messageInfo.Type == MessageEntityType.BotCommand ? messageInfo.Value : string.Empty;
+            return Message?.Text ?? string.Empty;
         }
     }
 
@@ -126,23 +122,6 @@ public sealed class TelegramRequest : Update
     /// <summary>
     /// 
     /// </summary>
-    private List<MessageEntityInfo> MessageEntities { get; set; } = [];
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public IReadOnlyList<MessageEntityInfo> ReadOnlyMessageEntities => MessageEntities;
-
-    #region 模板类代码
-    /// <summary>
-    /// 一个空的只读列表
-    /// </summary>
-    private static readonly IReadOnlyList<MessageEntityInfo> EmptyReadOnlyMessageEntities = new List<MessageEntityInfo>();
-    #endregion
-
-    /// <summary>
-    /// 
-    /// </summary>
     /// <param name="update"></param>
     /// <param name="telegramBotClient"></param>
     internal TelegramRequest(Update update, ITelegramBotClient telegramBotClient)
@@ -169,9 +148,6 @@ public sealed class TelegramRequest : Update
         Chat? chat = null;
         ChatId? chatId = null;
         User? requestUser = null;
-
-        MessageEntities = this.MessageEntityInfos(out var message);
-        message?.ReadUserChat(out chat, out chatId, out messageText, out requestUser);
 
         MessageText = messageText ?? string.Empty;
         Chat = chat;
