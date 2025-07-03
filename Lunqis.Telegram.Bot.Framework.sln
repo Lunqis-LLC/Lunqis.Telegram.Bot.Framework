@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{02
 		LICENSE = LICENSE
 		README.md = README.md
 		README_CN.md = README_CN.md
+		README_JP.md = README_JP.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunqis.Telegram.Bot.Framework.Controllers", "Lunqis.Telegram.Bot.Framework.Controllers\Lunqis.Telegram.Bot.Framework.Controllers.csproj", "{AA179484-C0BB-48C4-9FB9-F9420A52E52F}"
