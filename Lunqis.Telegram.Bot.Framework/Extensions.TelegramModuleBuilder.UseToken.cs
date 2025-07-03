@@ -25,19 +25,41 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Lunqis.Telegram.Bot.Framework;
 public static partial class Extensions
 {
-    private class UseTokenModule(string token) : ITelegramModule, ITelegramPreBuildModule
+    /// <summary>
+    /// Represents a module that configures a Telegram bot using a specified token.
+    /// </summary>
+    /// <remarks>This module implements <see cref="ITelegramModule"/> and <see
+    /// cref="ITelegramBotBuildService"/>  to provide functionality for adding and building services required for a
+    /// Telegram bot.</remarks>
+    /// <param name="token"></param>
+    private class UseTokenModule(string token) : ITelegramModule, ITelegramBotBuildService
     {
+        /// <summary>
+        /// Represents the authentication token used for secure communication.
+        /// </summary>
+        /// <remarks>This field is read-only and initialized with a value provided at construction.  It is
+        /// used internally to authenticate requests and should not be modified.</remarks>
         private readonly string _token = token;
+
+        /// <summary>
+        /// Configures the build service by adding a singleton action to the specified service collection.
+        /// </summary>
+        /// <remarks>The added singleton action configures an instance of <c>InternalSettings</c> by
+        /// setting its <c>Token</c> property. The <c>_token</c> field must not be null or empty; otherwise, an <see
+        /// cref="ArgumentException"/> is thrown.</remarks>
+        /// <param name="services">The service collection to which the build service configuration will be added. Cannot be null.</param>
+        public void AddBuildService(IServiceCollection services)
+        {
+            services.AddSingleton<Action<InternalSettings>>(settings =>
+            {
+                ArgumentException.ThrowIfNullOrEmpty(_token, nameof(_token));
+                settings.Token = _token;
+            });
+        }
 
         public void Build(IServiceCollection services, IServiceProvider builderService)
         {
 
-        }
-
-        public void PreBuild(IServiceCollection services, IServiceProvider builderService)
-        {
-            InternalSettings internalSettings = builderService.GetRequiredService<InternalSettings>();
-            internalSettings.Token = _token;
         }
     }
 }

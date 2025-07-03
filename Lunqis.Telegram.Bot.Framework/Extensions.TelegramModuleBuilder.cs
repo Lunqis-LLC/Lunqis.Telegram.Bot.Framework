@@ -67,4 +67,16 @@ public static partial class Extensions
         /// Adds the session options module to the Telegram module builder.
         return telegramModuleBuilder.AddModule(new UseMemorySessionModule());
     }
+
+    /// <summary>
+    /// Adds a token module to the Telegram module builder.
+    /// </summary>
+    /// <param name="telegramModuleBuilder">The <see cref="ITelegramModuleBuilder"/> instance to which the token module will be added.</param>
+    /// <param name="token">The bot token used to authenticate with the Telegram API. Cannot be <see langword="null"/> or empty.</param>
+    /// <returns>The same <see cref="ITelegramModuleBuilder"/> instance, allowing for method chaining.</returns>
+    public static ITelegramModuleBuilder UseToken(this ITelegramModuleBuilder telegramModuleBuilder, string token)
+    {
+        /// Adds the token module to the Telegram module builder.
+        return telegramModuleBuilder.AddModule(new UseTokenModule(token));
+    }
 }

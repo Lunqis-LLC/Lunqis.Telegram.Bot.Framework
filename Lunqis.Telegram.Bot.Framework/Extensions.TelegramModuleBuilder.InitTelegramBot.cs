@@ -21,20 +21,49 @@
 //SOFTWARE.
 using Lunqis.Telegram.Bot.Framework.Bot;
 using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot;
 
 namespace Lunqis.Telegram.Bot.Framework;
 public static partial class Extensions
 {
+    /// <summary>
+    /// Provides functionality to initialize and configure services required for a Telegram bot.
+    /// </summary>
+    /// <remarks>This class implements <see cref="ITelegramModule"/> and <see
+    /// cref="ITelegramBotBuildService"/> to  facilitate the setup of necessary dependencies for a Telegram bot,
+    /// including internal settings  and the bot client. It ensures that required configurations, such as the bot token,
+    /// are validated  and applied during the build process.</remarks>
     private class InitTelegramBotModule : ITelegramModule, ITelegramBotBuildService
     {
+        /// <summary>
+        /// Adds the build service dependencies to the specified service collection.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to which the dependencies will be added. Cannot be null.</param>
         public void AddBuildService(IServiceCollection services)
         {
             services.AddSingleton<InternalSettings>();
         }
 
+        /// <summary>
+        /// Configures and registers the required services for the Telegram bot client.
+        /// </summary>
+        /// <remarks>This method retrieves and configures internal settings for the Telegram bot client.
+        /// It ensures that the required token is provided and initializes a <see cref="TelegramBotClient"/> instance,
+        /// which is then registered as a singleton service.</remarks>
+        /// <param name="services">The <see cref="IServiceCollection"/> to which the Telegram bot client will be added.</param>
+        /// <param name="builderService">The <see cref="IServiceProvider"/> used to resolve dependencies required for configuration.</param>
         public void Build(IServiceCollection services, IServiceProvider builderService)
         {
-            
+            InternalSettings internalSettings = builderService.GetRequiredService<InternalSettings>();
+            builderService.GetServices<Action<InternalSettings>>()
+                .ToList()
+                .ForEach(setting => setting.Invoke(internalSettings));
+
+            ArgumentException.ThrowIfNullOrEmpty(internalSettings.Token, nameof(internalSettings.Token));
+
+            TelegramBotClient botClient = new(internalSettings.Token, internalSettings.HttpClient);
+
+            services.AddSingleton<ITelegramBotClient>(botClient);
         }
     }
 }

@@ -20,6 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 using Lunqis.Telegram.Bot.Framework.Bot;
+using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot;
 
 namespace Lunqis.Telegram.Bot.Framework;
 
@@ -32,6 +34,16 @@ namespace Lunqis.Telegram.Bot.Framework;
 public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
 {
     /// <summary>
+    /// Gets the service provider used to resolve application services.
+    /// </summary>
+    private IServiceProvider ServiceProvider { get; } = null!;
+
+    /// <summary>
+    /// Gets the <see cref="CancellationTokenSource"/> used to manage cancellation tokens for asynchronous operations.
+    /// </summary>
+    private CancellationTokenSource CancellationTokenSource { get; } = null!;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="TelegramBot"/> class.
     /// </summary>
     /// <remarks>This constructor sets up the Telegram bot by invoking the initialization method.  It is
@@ -39,6 +51,17 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
     private TelegramBot()
     {
         this.InitTelegramBot();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TelegramBot"/> class with the specified service provider.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider used to resolve dependencies for the bot.  This parameter cannot be <see langword="null"/>.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="serviceProvider"/> is <see langword="null"/>.</exception>
+    private TelegramBot(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        CancellationTokenSource = new CancellationTokenSource();
     }
 
     /// <summary>
@@ -69,27 +92,38 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
 
     public ITelegramBot Build()
     {
+        ServiceCollection services = new();
+        ServiceCollection BuildServices = new();
         foreach (var module in _modules)
         {
-            module.Build(new ServiceCollection(), null);
+            if (module is ITelegramBotBuildService telegramBotBuildService)
+                telegramBotBuildService.AddBuildService(BuildServices);
+            module.Build(services, BuildServices.BuildServiceProvider());
         }
+        return new TelegramBot(services.BuildServiceProvider());
     }
     #endregion
 
     #region ITelegramBot 接口部分
     public void Dispose()
     {
-        throw new NotImplementedException();
+        StopAsync().Wait(CancellationTokenSource.Token);
+        (ServiceProvider as IDisposable)?.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 
     public Task StartAsync(bool wait = false)
     {
-        throw new NotImplementedException();
+        ITelegramBotClient telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
+
+        telegramBotClient.StartReceiving();
     }
 
-    public Task StopAsync()
+    public async Task StopAsync()
     {
-        throw new NotImplementedException();
+        ITelegramBotClient telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
+        await telegramBotClient.Close(CancellationTokenSource.Token);
     }
     #endregion
 }
