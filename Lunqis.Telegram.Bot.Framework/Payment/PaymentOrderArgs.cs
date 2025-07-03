@@ -19,7 +19,27 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
-public static partial class Extensions
+namespace Lunqis.Telegram.Bot.Framework.Payment;
+
+/// <summary>
+/// Provides data for events related to payment orders.
+/// </summary>
+/// <remarks>This class encapsulates information about a payment order, including the order identifier,  the user
+/// associated with the order, and the current payment status.</remarks>
+public class PaymentOrderArgs : EventArgs
 {
+    /// <summary>
+    /// Gets or sets the unique identifier for the order.
+    /// </summary>
+    public required string OrderId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the user.
+    /// </summary>
+    public required long UserID { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current status of the payment.
+    /// </summary>
+    public PaymentStatus Status { get; set; }
 }

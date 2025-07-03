@@ -19,7 +19,28 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
-public static partial class Extensions
+namespace Lunqis.Telegram.Bot.Framework.Payment;
+
+/// <summary>
+/// Represents the result of a payment order operation, including details necessary for completing the payment.
+/// </summary>
+/// <remarks>This class encapsulates information such as the unique identifier for the order, the URL for payment
+/// processing,  and a QR code for alternative payment methods. It is typically used to provide the client with the
+/// necessary  details to complete a payment transaction.</remarks>
+public class PaymentOrderResult
 {
+    /// <summary>
+    /// Gets or sets the unique identifier for the order.
+    /// </summary>
+    public required string OrderId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL used to initiate a payment transaction.
+    /// </summary>
+    public required string PaymentUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the QR code value as a string.
+    /// </summary>
+    public string? QrCode { get; set; }
 }

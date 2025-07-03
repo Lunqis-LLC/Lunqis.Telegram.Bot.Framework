@@ -19,7 +19,31 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
+using Lunqis.Telegram.Bot.Framework.Bot;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Lunqis.Telegram.Bot.Framework.Payment;
 public static partial class Extensions
 {
+    /// <summary>
+    /// Provides functionality to configure services for the payment module in a Telegram application.
+    /// </summary>
+    /// <remarks>This module integrates payment-related services into the application's dependency injection
+    /// system. It is intended to be used as part of the application's modular architecture.</remarks>
+    private class UsePaymentModule(PaymentType paymentType) : ITelegramModule
+    {
+        private readonly PaymentType _paymentType = paymentType;
+
+        public void Build(IServiceCollection services, IServiceProvider builderService)
+        {
+            switch (_paymentType)
+            {
+                case PaymentType.Stripe:
+                    services.AddSingleton<IPaymentService, StripePayment>();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }

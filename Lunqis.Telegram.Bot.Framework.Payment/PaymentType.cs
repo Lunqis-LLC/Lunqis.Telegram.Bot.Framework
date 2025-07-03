@@ -19,7 +19,20 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
-public static partial class Extensions
+namespace Lunqis.Telegram.Bot.Framework.Payment;
+
+/// <summary>
+/// Represents the type of payment method used in a transaction.
+/// </summary>
+/// <remarks>This enumeration is used to specify the payment provider or method for processing payments.
+/// Currently, it includes <see cref="Stripe"/> as a supported payment type.</remarks>
+public enum PaymentType
 {
+    /// <summary>
+    /// Represents a stripe in a graphical or visual layout.
+    /// </summary>
+    /// <remarks>A stripe is typically used to define a visual element, such as a band or line, in a layout or
+    /// design. This class can be used to represent and manipulate stripes in various contexts, such as UI components or
+    /// graphical rendering.</remarks>
+    Stripe = 1,
 }
