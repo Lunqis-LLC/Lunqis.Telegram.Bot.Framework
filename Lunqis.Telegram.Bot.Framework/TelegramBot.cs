@@ -23,6 +23,7 @@ using Lunqis.Telegram.Bot.Framework.Bot;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
+using Telegram.Bot.Types.Enums;
 
 namespace Lunqis.Telegram.Bot.Framework;
 
@@ -51,7 +52,7 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
     /// intended for internal use and should not be called directly by external code.</remarks>
     private TelegramBot()
     {
-        this.InitTelegramBot();
+        _ = this.InitTelegramBot();
     }
 
     /// <summary>
@@ -83,7 +84,7 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
     /// <remarks>This interface provides methods for adding, configuring, and retrieving Telegram modules.
     /// Implementations of this interface are responsible for managing the lifecycle and dependencies of the
     /// modules.</remarks>
-    private List<ITelegramModule> _modules = [];
+    private readonly List<ITelegramModule> _modules = [];
 
     /// <summary>
     /// Adds a module to the current builder for configuration and processing.
@@ -127,7 +128,10 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
         foreach (var module in _modules)
         {
             if (module is ITelegramBotBuildService telegramBotBuildService)
+            {
                 telegramBotBuildService.AddBuildService(BuildServices);
+            }
+
             module.Build(services, BuildServices.BuildServiceProvider());
         }
         return new TelegramBot(services.BuildServiceProvider());
@@ -162,16 +166,22 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task StartAsync(bool wait = false)
     {
-        ITelegramBotClient telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
+        var telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
-        telegramBotClient.StartReceiving<TelegramUpdateHandler>(new ReceiverOptions
+        var updateHandler = ServiceProvider.GetRequiredService<IUpdateHandler>();
+
+        telegramBotClient.StartReceiving(updateHandler, new ReceiverOptions
         {
             AllowedUpdates = [],
         }, CancellationTokenSource.Token);
 
         if (wait)
+        {
             while (!CancellationTokenSource.IsCancellationRequested)
+            {
                 await Task.Delay(1000, CancellationTokenSource.Token);
+            }
+        }
     }
 
     /// <summary>
@@ -183,7 +193,7 @@ public partial class TelegramBot : ITelegramBot, ITelegramModuleBuilder
     /// <returns>A task that represents the asynchronous operation of stopping the bot client.</returns>
     public async Task StopAsync()
     {
-        ITelegramBotClient telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
+        var telegramBotClient = ServiceProvider.GetRequiredService<ITelegramBotClient>();
         await telegramBotClient.Close(CancellationTokenSource.Token);
     }
     #endregion

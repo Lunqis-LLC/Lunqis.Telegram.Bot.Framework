@@ -21,26 +21,32 @@
 //SOFTWARE.
 using Lunqis.Telegram.Bot.Framework.Bot;
 using Microsoft.Extensions.DependencyInjection;
-using Telegram.Bot.Polling;
+using Microsoft.Extensions.Logging;
 
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
+namespace Lunqis.Telegram.Bot.Framework;
 public static partial class Extensions
 {
     /// <summary>
-    /// Provides functionality to configure services for the controller module in a Telegram application.
+    /// Configures the application to use console-based logging with a minimum log level of Information.
     /// </summary>
-    /// <remarks>This module integrates controller-related services into the application's dependency
-    /// injection system. Use the <see cref="Build"/> method to register required services and dependencies.</remarks>
-    private class UseControllerModule : ITelegramModule
+    /// <remarks>This module integrates console logging into the application's logging infrastructure. It
+    /// registers the necessary services in the provided <see cref="IServiceCollection"/>.</remarks>
+    private class UseConsoleLogModule : ITelegramModule
     {
         /// <summary>
-        /// Configures the service collection to use the controller module.
+        /// Configures logging services for the application.
         /// </summary>
-        /// <param name="services">The service collection to configure.</param>
-        /// <param name="builderService">The service provider used during the configuration process.</param>
+        /// <remarks>This method adds console logging to the provided service collection and sets the
+        /// minimum logging level to <see cref="LogLevel.Information"/>.</remarks>
+        /// <param name="services">The <see cref="IServiceCollection"/> to which logging services will be added.</param>
+        /// <param name="builderService">The <see cref="IServiceProvider"/> used to resolve dependencies during the configuration process.</param>
         public void Build(IServiceCollection services, IServiceProvider builderService)
         {
-            services.AddSingleton<IUpdateHandler, TelegramControllerUpdateHandler>();
+            _ = services.AddLogging(loggingBuilder =>
+            {
+                _ = loggingBuilder.AddConsole();
+                _ = loggingBuilder.SetMinimumLevel(LogLevel.Information);
+            });
         }
     }
 }

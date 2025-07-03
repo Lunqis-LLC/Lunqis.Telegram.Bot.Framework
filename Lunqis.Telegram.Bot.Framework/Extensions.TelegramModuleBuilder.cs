@@ -93,4 +93,17 @@ public static partial class Extensions
         /// Adds the token module to the Telegram module builder.
         return telegramModuleBuilder.AddModule(new UseTokenModule(token));
     }
+
+    /// <summary>
+    /// Adds a console logging module to the Telegram module builder.
+    /// </summary>
+    /// <remarks>This method enables logging of Telegram module activity to the console. It is useful for
+    /// debugging and monitoring purposes during development.</remarks>
+    /// <param name="telegramModuleBuilder">The <see cref="ITelegramModuleBuilder"/> instance to which the console logging module will be added.</param>
+    /// <returns>The same <see cref="ITelegramModuleBuilder"/> instance, allowing for method chaining.</returns>
+    public static ITelegramModuleBuilder UseConsoleLog(this ITelegramModuleBuilder telegramModuleBuilder)
+    {
+        /// Adds the console log module to the Telegram module builder.
+        return telegramModuleBuilder.AddModule(new UseConsoleLogModule());
+    }
 }
