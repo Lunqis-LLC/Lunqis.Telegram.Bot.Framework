@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{02
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunqis.Telegram.Bot.Framework.Controllers", "Lunqis.Telegram.Bot.Framework.Controllers\Lunqis.Telegram.Bot.Framework.Controllers.csproj", "{AA179484-C0BB-48C4-9FB9-F9420A52E52F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunqis.Telegram.Bot.Framework.Func", "Lunqis.Telegram.Bot.Framework.Func\Lunqis.Telegram.Bot.Framework.Func.csproj", "{3ECEF5FE-F37E-43D5-A701-2F200D5708EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{AA179484-C0BB-48C4-9FB9-F9420A52E52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA179484-C0BB-48C4-9FB9-F9420A52E52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA179484-C0BB-48C4-9FB9-F9420A52E52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ECEF5FE-F37E-43D5-A701-2F200D5708EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ECEF5FE-F37E-43D5-A701-2F200D5708EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ECEF5FE-F37E-43D5-A701-2F200D5708EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ECEF5FE-F37E-43D5-A701-2F200D5708EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
