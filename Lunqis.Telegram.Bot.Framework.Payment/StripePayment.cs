@@ -85,12 +85,12 @@ internal class StripePayment : IPaymentService
                 new() {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)amount,
                         Currency = "JPY",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = description,
                         },
+                        UnitAmountDecimal = amount,
                     },
                     Quantity = 1,
                 },
