@@ -20,19 +20,30 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 using Lunqis.Telegram.Bot.Framework.Bot;
+using Lunqis.Telegram.Bot.Framework.Users;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
+namespace Lunqis.Telegram.Bot.Framework.Func;
 public static partial class Extensions
 {
     /// <summary>
-    /// Configures the specified <see cref="ITelegramModuleBuilder"/> to use the controller module.
+    /// Represents a module for adding functionality to a Telegram-based application.
     /// </summary>
-    /// <param name="builder">The <see cref="ITelegramModuleBuilder"/> instance to configure. Cannot be <see langword="null"/>.</param>
-    /// <returns>The configured <see cref="ITelegramModuleBuilder"/> instance, allowing for further chaining of module
-    /// configurations.</returns>
-    public static ITelegramModuleBuilder UseController(this ITelegramModuleBuilder builder)
+    /// <remarks>This module is designed to integrate with the application's dependency injection system.
+    /// Implementations of <see cref="ITelegramModule"/> are used to configure services and dependencies required for
+    /// Telegram-related functionality.</remarks>
+    private class AddFuncModule(string botCommand, Action<TelegramContext> action) : ITelegramModule, ITelegramBotBuildService
     {
-        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
-        return builder.AddModule(new UseControllerModule());
+        internal static readonly Dictionary<string, Action<TelegramContext>> _actions = [];
+
+        public void AddBuildService(IServiceCollection services)
+        {
+            _actions.Add(botCommand, action);
+        }
+
+        public void Build(IServiceCollection services, IServiceProvider builderService)
+        {
+            
+        }
     }
 }

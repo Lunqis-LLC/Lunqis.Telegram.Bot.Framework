@@ -21,7 +21,7 @@
 //SOFTWARE.
 using Lunqis.Telegram.Bot.Framework.Bot;
 
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
+namespace Lunqis.Telegram.Bot.Framework.Func;
 public static partial class Extensions
 {
     /// <summary>

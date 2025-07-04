@@ -19,20 +19,7 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using Lunqis.Telegram.Bot.Framework.Bot;
-
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
+namespace Lunqis.Telegram.Bot.Framework.Func;
 public static partial class Extensions
 {
-    /// <summary>
-    /// Configures the specified <see cref="ITelegramModuleBuilder"/> to use the controller module.
-    /// </summary>
-    /// <param name="builder">The <see cref="ITelegramModuleBuilder"/> instance to configure. Cannot be <see langword="null"/>.</param>
-    /// <returns>The configured <see cref="ITelegramModuleBuilder"/> instance, allowing for further chaining of module
-    /// configurations.</returns>
-    public static ITelegramModuleBuilder UseController(this ITelegramModuleBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
-        return builder.AddModule(new UseControllerModule());
-    }
 }

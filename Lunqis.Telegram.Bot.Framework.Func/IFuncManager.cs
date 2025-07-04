@@ -19,20 +19,23 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using Lunqis.Telegram.Bot.Framework.Bot;
+using Lunqis.Telegram.Bot.Framework.Users;
 
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
-public static partial class Extensions
+namespace Lunqis.Telegram.Bot.Framework.Func;
+
+/// <summary>
+/// Defines a contract for managing and retrieving functions associated with bot commands.
+/// </summary>
+/// <remarks>This interface is designed to provide a mechanism for mapping bot commands to their corresponding
+/// actions. Implementations of this interface should ensure that the returned action is appropriate for the specified
+/// bot command.</remarks>
+internal interface IFuncManager
 {
     /// <summary>
-    /// Configures the specified <see cref="ITelegramModuleBuilder"/> to use the controller module.
+    /// Retrieves an action associated with the specified bot command.
     /// </summary>
-    /// <param name="builder">The <see cref="ITelegramModuleBuilder"/> instance to configure. Cannot be <see langword="null"/>.</param>
-    /// <returns>The configured <see cref="ITelegramModuleBuilder"/> instance, allowing for further chaining of module
-    /// configurations.</returns>
-    public static ITelegramModuleBuilder UseController(this ITelegramModuleBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
-        return builder.AddModule(new UseControllerModule());
-    }
+    /// <param name="botCommand">The bot command for which the corresponding action is requested. Cannot be null or empty.</param>
+    /// <returns>An <see cref="Action{TelegramContext}"/> that represents the operation to be performed for the given bot
+    /// command. Returns <see langword="null"/> if no action is associated with the specified command.</returns>
+    public Action<TelegramContext> GetFunc(string botCommand);
 }

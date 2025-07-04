@@ -19,20 +19,25 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using Lunqis.Telegram.Bot.Framework.Bot;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
-namespace Lunqis.Telegram.Bot.Framework.Controllers;
-public static partial class Extensions
+namespace Lunqis.Telegram.Bot.Framework.Users;
+
+/// <summary>
+/// Defines a factory for creating Telegram requests based on incoming updates.
+/// </summary>
+/// <remarks>Implementations of this interface are responsible for generating instances of <see
+/// cref="TelegramRequest"> that encapsulate the details of a specific interaction with the Telegram API. This allows
+/// for decoupling request creation logic from the rest of the application.</remarks>
+public interface IRequestFactory
 {
     /// <summary>
-    /// Configures the specified <see cref="ITelegramModuleBuilder"/> to use the controller module.
+    /// Creates a new Telegram request based on the provided parameters.
     /// </summary>
-    /// <param name="builder">The <see cref="ITelegramModuleBuilder"/> instance to configure. Cannot be <see langword="null"/>.</param>
-    /// <returns>The configured <see cref="ITelegramModuleBuilder"/> instance, allowing for further chaining of module
-    /// configurations.</returns>
-    public static ITelegramModuleBuilder UseController(this ITelegramModuleBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
-        return builder.AddModule(new UseControllerModule());
-    }
+    /// <param name="botClient">The Telegram bot client used to interact with the Telegram API.</param>
+    /// <param name="update">The update received from the Telegram API.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
+    /// <returns>A new instance of <see cref="TelegramRequest"/>.</returns>
+    public TelegramRequest Create(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken);
 }
