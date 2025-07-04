@@ -20,8 +20,10 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 using Stripe.Checkout;
+using Telegram.Bot;
 
 namespace Lunqis.Telegram.Bot.Framework.Payment;
 
@@ -46,6 +48,20 @@ internal class StripePayment : IPaymentService
     public event EventHandler<PaymentOrderArgs> OnOrderChange = (obj, e) => { };
 
     /// <summary>
+    /// Provides access to the application's service provider for resolving dependencies.
+    /// </summary>
+    /// <remarks>This field is intended to store a reference to an <see cref="IServiceProvider"/> instance, 
+    /// which can be used to retrieve services and dependencies within the application.</remarks>
+    private readonly IServiceProvider _serviceProvider;
+
+    /// <summary>
+    /// Represents the Telegram Bot client used to interact with the Telegram Bot API.
+    /// </summary>
+    /// <remarks>This field is a readonly instance of <see cref="ITelegramBotClient"/> and is used to send
+    /// requests  and receive responses from the Telegram Bot API. It cannot be modified after initialization.</remarks>
+    private readonly ITelegramBotClient _telegramBotClient;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="StripePayment"/> class and configures the Stripe API key.
     /// </summary>
     /// <remarks>This constructor retrieves the Stripe API key from the application's configuration and sets
@@ -53,10 +69,13 @@ internal class StripePayment : IPaymentService
     /// necessary  settings before calling this constructor.</remarks>
     /// <param name="configuration">The application configuration object containing the Stripe payment provider settings. The configuration must
     /// include a section named <see cref="PaymentProviderName"/> with a valid API key.</param>
-    public StripePayment(IConfiguration configuration)
+    public StripePayment(IServiceProvider serviceProvider, IConfiguration configuration)
     {
         var stripeConfig = configuration.GetSection(PaymentProviderName);
         var apiKey = stripeConfig.GetSection(nameof(StripeConfiguration.ApiKey)).Value;
+
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _telegramBotClient = _serviceProvider.GetRequiredService<ITelegramBotClient>();
 
         StripeConfiguration.ApiKey = apiKey;
     }

@@ -39,7 +39,7 @@ public static partial class Extensions
             switch (_paymentType)
             {
                 case PaymentType.Stripe:
-                    services.AddSingleton<IPaymentService, StripePayment>();
+                    services.AddTransient<IPaymentService, StripePayment>();
                     break;
                 default:
                     break;

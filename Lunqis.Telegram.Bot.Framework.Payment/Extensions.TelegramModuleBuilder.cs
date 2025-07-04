@@ -19,7 +19,23 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+using Lunqis.Telegram.Bot.Framework.Bot;
+
 namespace Lunqis.Telegram.Bot.Framework.Payment;
 public static partial class Extensions
 {
+    /// <summary>
+    /// Configures the specified <see cref="ITelegramModuleBuilder"/> to use a payment module with the given payment
+    /// type.
+    /// </summary>
+    /// <param name="builder">The <see cref="ITelegramModuleBuilder"/> instance to configure. Cannot be <see langword="null"/>.</param>
+    /// <param name="paymentType">The type of payment to be used by the module.</param>
+    /// <returns>The configured <see cref="ITelegramModuleBuilder"/> instance, allowing further chaining of module
+    /// configurations.</returns>
+    public static ITelegramModuleBuilder UsePayment(this ITelegramModuleBuilder builder, PaymentType paymentType)
+    {
+        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+        return builder.AddModule(new UsePaymentModule(paymentType));
+    }
 }
